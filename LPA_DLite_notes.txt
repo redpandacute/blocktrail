@@ -1,0 +1,16 @@
+Functions:
+
+g(s) = total cost to current node s (in terms of path)
+g*(s) = total cost of the shortest path to current node s
+
+h(s) = heuristic value (defined mainly by position of s)
+    h(s_goal) = 0, h(s) <= c(s,s') + h(s') (where s' is a successor of s)
+
+rhs(s) = (g(s') + c(s',s)) where s' is a predecessor of s (0 if s = s_start) where g(s') is the lowest g(s') adjecent node to s
+
+k1(s) = min(g(s), rhs(s)) + h(s)
+k2(s) = min(g(s),rhs(s))
+
+k(s) = [k1(s);k2(s)]
+
+k(s) <= k'(s) iff (k1(s) < k1'(s) or k1(s) = k1'(s) and k2(s) <= k2'(s)
