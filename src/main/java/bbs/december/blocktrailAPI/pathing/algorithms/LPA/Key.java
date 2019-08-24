@@ -1,4 +1,4 @@
-package blocktrail.api.pathing.LPA;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
 public class Key {
 

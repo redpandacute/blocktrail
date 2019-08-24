@@ -1,6 +1,4 @@
-package blocktrail.api.pathing.LPA;
-
-import javax.swing.text.Position;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
 public interface INode {
 

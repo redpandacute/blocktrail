@@ -1,6 +1,6 @@
-package blocktrail.api.pathing;
+package bbs.december.blocktrailAPI;
 
-import blocktrail.api.pathing.LPA.PositionHashMap;
+import bbs.december.blocktrail.pathing.PositionHashMap;
 
 public interface IPathFindingAlgorithm extends Runnable {
 

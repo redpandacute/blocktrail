@@ -1,4 +1,4 @@
-package blocktrail.api.pathing.LPA;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
 import java.util.HashMap;
 import java.util.Map;

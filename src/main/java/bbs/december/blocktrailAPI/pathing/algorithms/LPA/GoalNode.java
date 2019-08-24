@@ -1,4 +1,6 @@
-package blocktrail.api.pathing.LPA;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
+
+import bbs.december.blocktrail.pathing.PositionHashMap;
 
 public class GoalNode implements INode {
 

@@ -1,7 +1,7 @@
-package blocktrail.api.pathing.LPA;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
-import blocktrail.api.pathing.DLite.DLite;
-import blocktrail.api.pathing.IPathFindingAlgorithm;
+import bbs.december.blocktrailAPI.pathing.algorithms.DLite.DLite;
+import bbs.december.blocktrailAPI.IPathFindingAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,10 +40,10 @@ public class Path implements Iterable<INode> {
 
         INode node = lpa.goalNode;
 
-        while(!node.getClass().isInstance(StartNode.class)) { //run until the StartNode has been reached
+        do { //run until the StartNode has been reached
             node = findNextNode(node);
             add(node);
-        }
+        } while(!node.getClass().isInstance(StartNode.class));
 
         return true;
     }

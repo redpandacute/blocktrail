@@ -1,4 +1,6 @@
-package blocktrail.api.pathing.LPA;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
+
+import bbs.december.blocktrail.pathing.PositionHashMap;
 
 public class Node implements INode {
 
@@ -46,7 +48,7 @@ public class Node implements INode {
 
         //todo implement movecost
 
-        return 0;
+        return map.getCostHelper().moveCost(this, node);
     }
 
     @Override

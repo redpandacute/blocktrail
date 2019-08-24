@@ -1,6 +1,7 @@
-package blocktrail.api.pathing.LPA;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
-import blocktrail.api.pathing.IPathFindingAlgorithm;
+import bbs.december.blocktrail.pathing.PositionHashMap;
+import bbs.december.blocktrailAPI.IPathFindingAlgorithm;
 
 public class LPA implements IPathFindingAlgorithm {
 

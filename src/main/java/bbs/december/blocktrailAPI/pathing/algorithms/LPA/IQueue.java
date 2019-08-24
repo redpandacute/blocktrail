@@ -1,6 +1,4 @@
-package blocktrail.api.pathing.LPA;
-
-import java.util.HashMap;
+package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
 public interface IQueue  {
 

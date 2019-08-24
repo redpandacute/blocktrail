@@ -1,6 +1,6 @@
-package blocktrail.api.pathing.DLite;
+package bbs.december.blocktrailAPI.pathing.algorithms.DLite;
 
-import blocktrail.api.pathing.IPathFindingAlgorithm;
+import bbs.december.blocktrailAPI.IPathFindingAlgorithm;
 
 public class DLite implements IPathFindingAlgorithm {
 

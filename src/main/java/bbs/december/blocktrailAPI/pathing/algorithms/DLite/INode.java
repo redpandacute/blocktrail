@@ -1,4 +1,4 @@
-package blocktrail.api.pathing.DLite;
+package bbs.december.blocktrailAPI.pathing.algorithms.DLite;
 
 public interface INode {
 

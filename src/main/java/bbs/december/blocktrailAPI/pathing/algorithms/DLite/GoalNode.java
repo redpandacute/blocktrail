@@ -1,19 +1,16 @@
-package blocktrail.api.pathing.DLite;
+package bbs.december.blocktrailAPI.pathing.algorithms.DLite;
 
-public class Node implements INode {
+public class GoalNode implements INode {
 
     public final int x, y, z;
 
-    public Node(int x, int y, int z) {
+    public GoalNode(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-
-    /*since d* lite starts its calculation not from the start but from the goal, the heuristics get calculated
-    * based upon the location of the node s and the start_node, NOT the goal_node.
-    */
+    //exactly the same heuristic approach as for every other node
 
     @Override
     public double heuristic(int sx, int sy, int sz) {
