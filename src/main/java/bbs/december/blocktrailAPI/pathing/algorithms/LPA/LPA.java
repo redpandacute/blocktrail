@@ -1,6 +1,5 @@
 package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
-import bbs.december.blocktrail.pathing.PositionHashMap;
 import bbs.december.blocktrailAPI.IPathFindingAlgorithm;
 
 public class LPA implements IPathFindingAlgorithm {
@@ -9,24 +8,20 @@ public class LPA implements IPathFindingAlgorithm {
     private String threadName;
 
     PriorityQueue priorityQueue;
-    PositionHashMap positionHashMap;
-
-    StartNode startNode;
-    GoalNode goalNode;
+    IPositionHashMap positionHashMap;
 
     boolean active = false;
 
-    public LPA(StartNode startNode, GoalNode goalNode, String threadName) {
-        this.startNode = startNode;
-        this.goalNode = goalNode;
+    public LPA(IPositionHashMap positionHashMap, String threadName) {
         this.threadName = threadName;
+
+        this.positionHashMap = positionHashMap;
     }
 
-    private void initialize(StartNode startNode, GoalNode goalNode) {
+    private void initialize() {
         priorityQueue = new PriorityQueue();
-        positionHashMap = new PositionHashMap(startNode, goalNode);
 
-        priorityQueue.add(startNode);
+        priorityQueue.add(positionHashMap.getStartNode());
     }
 
     public void updateNode(INode node) {
@@ -45,13 +40,19 @@ public class LPA implements IPathFindingAlgorithm {
     }
 
     private void computeShortestPath() {
-        while((priorityQueue.lowest().getKey().isLowerThan(positionHashMap.goalNode.calculateKey()) || !positionHashMap.goalNode.isLocallyConsistent()) && active) {
+        while((priorityQueue.lowest().getKey().isLowerThan(positionHashMap.getGoalNode().calculateKey()) || !positionHashMap.getGoalNode().isLocallyConsistent()) && active) {
             //unsure if the algorithm could get stuck here at the comparison of "isLowerThan" since it actually means <= and not <
 
             INode node = priorityQueue.pop();
 
             if(node.getG() > node.getRHS()) {
                 node.setG(node.getRHS());
+
+                /**
+                for(INode curr : positionHashMap.getSuccessors(node)) {
+                    updateNode(curr);
+                }
+                 **/ //todo: determine how i want this to be done
 
                 for(int i =0; i < 3;i++) {
                     for(int l =0; l < 3;l++) {
@@ -65,6 +66,14 @@ public class LPA implements IPathFindingAlgorithm {
                 }
             } else {
                 node.setG(Double.POSITIVE_INFINITY);
+
+                /**
+                 for(INode curr : positionHashMap.getSuccessors(node)) {
+                 updateNode(curr);
+                 }
+
+                 updateNode(node); //in this case, the node itself should also get updated
+                 **/
 
                 for(int i =0; i < 3;i++) {
                     for(int l =0; l < 3;l++) {
@@ -115,14 +124,14 @@ public class LPA implements IPathFindingAlgorithm {
     }
 
     @Override
-    public PositionHashMap getPositionHashMap() {
+    public IPositionHashMap getPositionHashMap() {
         return positionHashMap;
     }
 
     @Override
     public void start() {
         if(thread == null) {
-            initialize(startNode, goalNode);
+            initialize();
 
             this.active = true;
 

@@ -1,12 +1,21 @@
 package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
-import bbs.december.blocktrail.pathing.PositionHashMap;
+
+//the idea behind an airnode is that it has only limited successors. for now, the only successor for an airnode is the node directly beneath it.
+//this means that also digging down actually isnt a move that modifies the location of the path but instead turns the node the path is in into an
+//airnode which then offers different successors than before.
+
+//this also offers the opportunity to implement mid air block placment which is a counterpart to digging down that turns an airnode into a regular node.
+
+//the airnode approach offers the possibility to implement fallingcontroll apart from just falling straight.
 
 import java.util.ArrayList;
 
-public class Node implements INode {
+public class AirNode implements INode {
 
-    public final int x, y, z;
+    private final int x, y, z;
+
+    //private final double velocity; maybe requried in the future.
 
     private double g = INFINITY;
     private double rhs = INFINITY;
@@ -15,33 +24,19 @@ public class Node implements INode {
 
     private IPositionHashMap map;
 
-    public Node(int x, int y, int z, IPositionHashMap map) {
+    public AirNode(int x, int y, int z, IPositionHashMap map) {
         this.x = x;
         this.y = y;
         this.z = z;
 
         this.map = map;
+        //this.velocity = velocity;
     }
-
-    public Node(int x, int y, int z, int g, IPositionHashMap map) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-
-        this.map = map;
-        this.g = g;
-    }
-
-
-    /*
-    lpa* starts its calculation estimates its heuristic values according to the position of the goal_node
-    */
 
     @Override
     public double heuristic() {
         double h_heuristic = getHorizontalHeuristic(map.getGoalNode().getX(), map.getGoalNode().getZ());
         double v_heuristic = getVerticalHeuristic(map.getGoalNode().getY());
-
         return v_heuristic + h_heuristic;
     }
 
@@ -50,7 +45,7 @@ public class Node implements INode {
 
         //todo implement movecost
 
-        return map.getCostHelper().moveCost(this, node);
+        return 0;
     }
 
     @Override
@@ -95,7 +90,18 @@ public class Node implements INode {
 
     @Override
     public double getRHS() {
-        return rhs;
+        return 0;
+    }
+
+    @Override
+    public double calculateRHS() {
+        return 0;
+    }
+
+    @Override
+    public Key calculateKey() {
+        key = new Key(this);
+        return key;
     }
 
     @Override
@@ -105,40 +111,7 @@ public class Node implements INode {
 
     @Override
     public String getHashKey() {
-        return x + "" + y + "" + z; //I am not sure if the "" are necessary
-    }
-
-
-
-    /*
-    * The when the RHS value is calculated, the node checks all adjecent Nodes and their g values and the cost to traverse
-    * the node border. The lowest found formula g(s') + c(s',s) = rhs .
-    * */
-
-    public double calculateRHS() {
-        rhs = INFINITY;
-
-        /**
-        for(INode curr : map.getPredecessors(this)) {
-            if(curr.getG() + curr.moveCost(this) < rhs) { //Todo implement cost function
-                rhs = curr.getG() + curr.moveCost(this);
-            }
-        }
-         **/ //todo: implement this
-
-        for(int i =0; i < 3;i++) {
-            for(int l =0; l < 3;l++) {
-                for(int f =0; f < 3;f++) {
-                    INode curr = map.get(x + l - 1,y + i - 1,z + f - 1);
-                    if(i==1 && l==1 && f==0) f++ ; //skip one in order to not get the node itself
-                    if(curr.getG() + curr.moveCost(this) < rhs) { //Todo implement cost function
-                        rhs = curr.getG() + curr.moveCost(this);
-                    }
-                }
-            }
-        }
-
-        return rhs;
+        return x + "" + y + "" + z + "A"; //since airnodes can be on top of other nodes, they have to have a different hashkey for identification
     }
 
     @Override
@@ -153,15 +126,13 @@ public class Node implements INode {
 
     @Override
     public ArrayList<INode> getSuccessors() {
-        return null;
-    }
+        ArrayList<INode> list= new ArrayList<>();
 
-    @Override
-    public Key calculateKey() {
-        key = new Key(this);
-        return key;
-    }
+        if(map.containsNode())
 
+        list.add(map.get(x,y -1,z, true));
+        return list;
+    }
 
     private double getVerticalHeuristic(int gy) {
 

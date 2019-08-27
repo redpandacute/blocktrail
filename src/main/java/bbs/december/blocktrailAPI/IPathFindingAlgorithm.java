@@ -1,10 +1,10 @@
 package bbs.december.blocktrailAPI;
 
-import bbs.december.blocktrail.pathing.PositionHashMap;
+import bbs.december.blocktrailAPI.pathing.algorithms.LPA.IPositionHashMap;
 
 public interface IPathFindingAlgorithm extends Runnable {
 
-    PositionHashMap getPositionHashMap();
+    IPositionHashMap getPositionHashMap();
 
     void start();
     void end();

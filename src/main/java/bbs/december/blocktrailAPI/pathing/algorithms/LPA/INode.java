@@ -1,5 +1,7 @@
 package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
+import java.util.ArrayList;
+
 public interface INode {
 
 
@@ -17,6 +19,11 @@ public interface INode {
     int getY();
     int getZ();
 
+    double getCordX();
+    double getCordY();  //Position of a node is determined by the block the player is standing INSIDE of with his legs which means it is +0.5y
+    double getCordZ();  //above the block hes standing on and also apart from his own location.
+
+
     double getG();
     void setG(double g);
 
@@ -29,5 +36,8 @@ public interface INode {
     String getHashKey();
 
     boolean isLocallyConsistent();
+
+    ArrayList<INode> getPredecessors();
+    ArrayList<INode> getSuccessors();
 
 }
