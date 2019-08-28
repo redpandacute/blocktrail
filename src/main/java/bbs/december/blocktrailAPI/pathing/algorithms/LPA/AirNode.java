@@ -121,17 +121,12 @@ public class AirNode implements INode {
 
     @Override
     public ArrayList<INode> getPredecessors() {
-        return null;
+        return map.getPredecessors(this);
     }
 
     @Override
     public ArrayList<INode> getSuccessors() {
-        ArrayList<INode> list= new ArrayList<>();
-
-        if(map.containsNode())
-
-        list.add(map.get(x,y -1,z, true));
-        return list;
+        return map.getSuccessors(this);
     }
 
     private double getVerticalHeuristic(int gy) {

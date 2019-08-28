@@ -4,14 +4,12 @@ import bbs.december.blocktrail.movement.Directions;
 import bbs.december.blocktrail.movement.Jumps;
 import bbs.december.blocktrail.movement.MovementHelper;
 import bbs.december.blocktrailAPI.pathing.algorithms.LPA.*;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class PositionHashMap extends HashMap<String, INode> implements IPositionHashMap {
 
@@ -59,187 +57,126 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
     }
 
     //finding all possible airnodes
-    public ArrayList<INode> findSuccessors(INode node) {
+    @Override
+    public ArrayList<INode> getSuccessors(INode node) {
 
         ArrayList<INode> suc = new ArrayList<>();
 
         if(node.getClass().isInstance(AirNode.class)) {
             if(world.getBlockState(new BlockPos(node.getCordX(), node.getCordY() - 1, node.getZ())).isSolid()) { //todo get a better blockhelper for solid check
-                suc.add(this.get(node.getX(),node.getY(), node.getZ(), false)); //migth create a problem with the reaction time when it comes to placing the water but it should be okey for now
+                suc.add(get(node.getX(),node.getY(), node.getZ(), false)); //migth create a problem with the reaction time when it comes to placing the water but it should be okey for now
                 return suc;
             } else {
-                suc.add(this.get(node.getX(), node.getY() - 1, node.getZ(), true)); //todo implement liquid management, for now it should just avoid liquids at all cost
+                suc.add(get(node.getX(), node.getY() - 1, node.getZ(), true)); //todo implement liquid management, for now it should just avoid liquids at all cost
                 return suc;
             }
         }
 
+        suc.add(get(node.getX(), node.getY(), node.getZ(), true)); //adding the dig move, which essentially just turns the current node into an airnode
+
 
         //getting all possible successors for a regular node
+        if(world.isAirBlock(new BetterBlockPos(node.getCordX(), node.getCordY() + 1, node.getCordZ()))) {
+            //Blackjump is possible
+            suc.add(get(node.getX(), node.getY() + 1, node.getZ(), true));
 
+            for(Directions direction : Directions.values()) { //adding all the possible jumpsuccessors in only 2 lines :) suck it baritone
+                addJumpSuccessors(node, suc, movementHelper.getBestPossibleJump(node, direction), direction);
+            }
+        }
         //white traverse movement -- these always get added since the algorithm could be bridging
         addStraightMovementRadius(suc, node, 1, 0, false);
         addDiagonalMovementRadius(suc, node, 1, 0, false);
 
-        //white drop movement
-        addStraightMovementRadius(suc, node, 1, -1, true);
-        addDiagonalMovementRadius(suc, node, 1, -1, true); //leaving this out for the moment to avoid problems with the
-
-        //question is if the possible movments should already be evaluated here or in the movecost
-
+        //white drop movement todo: add dropmovement (left out in order to finally make some progress :) )
+        //addStraightMovementRadius(suc, node, 1, -1, true);
+        //addDiagonalMovementRadius(suc, node, 1, -1, true); //leaving this out for the moment to avoid problems with the
+        return suc;
     }
-
-
-    //these two function seem very scary and they probably are, i really need to talk to somebody about this.
 
     @Override
     public ArrayList<INode> getPredecessors(INode node) {
-        ArrayList<INode> predecessors = new ArrayList<>();
 
-        //this is not here to stay, its just for the sake of testing here
-        //todo remove options from here and add enum for movementtypes
+        ArrayList<INode> pre = new ArrayList<>();
 
-        boolean parcour = false;
-
-        /* there will be 5 categories for movement:
-
-            walk/sprint (t1)
-            short jump (t2)
-            medium jump (t3)
-            long jump (t4)
-            parcour (t5)
+        if(node.getClass().isInstance(AirNode.class)) {
+            add(get(node.getX(), node.getY() + 1, node.getZ(), true));
 
 
-            movement is split into 4 layers:
+            //adding all the possible jumps
 
-            up (x, +1, z)
-            even (x, 0, z)
-            down (x, -1, z)
-            parcour (x, -drop, z)
-         */
-
-        //walking predecessors
-
-        for(int i =0; i < 3;i++) {
-            for(int l =0; l < 3;l++) {
-                for(int f =0; f < 3;f++) {
-                    predecessors.add(get(node.getX() + l - 1,node.getY() + i - 1,node.getZ() + f - 1));
-                    if(i==1 && l==1 && f==0) f++ ; //skip one in order to not get the node itself
-                }
+            for(Directions direction : Directions.values()) { //adding all the possible jumppredecessors in only 2 lines :) suck it baritone
+                addJumpPredecessors(node, pre, movementHelper.getBestPossibleJump(node, direction), direction);
             }
-        }
 
-        //add additional y+1 predecessors
-        addStraightMovementRadius(predecessors, node, 2, 1);
-        addDiagonalMovementRadius(predecessors, node, 2, 1);
+        } else {
+            //if the current node is a regular node, it can either be reached by a red jump, by an airnode inside the current node or an adjecent block (walking)
+            addStraightMovementRadius(pre, node, 1, 0, false);
+            addDiagonalMovementRadius(pre, node, 1, 0, false);
 
-        //jump predecessors
+            add(get(node.getX(), node.getY(), node.getZ(), true));
 
-        //short jump even
-        addStraightMovementRadius(predecessors, node, 2, 0);
-        addDiagonalMovementRadius(predecessors, node, 2, 0);
-
-        //shortjump up
-        addStraightMovementRadius(predecessors, node, 2, -1);
-        addDiagonalMovementRadius(predecessors, node, 2, -1);
-
-        //shortjump down
-        addStraightMovementRadius(predecessors, node, 3, 1);
-
-        //mediumjump even
-        addStraightMovementRadius(predecessors, node, 3, 0);
-
-        //mediumjump up
-        addStraightMovementRadius(predecessors, node, 3, -1);
-
-        //mediumjump down
-        addStraightMovementRadius(predecessors, node, 4, 1);
-        addStraightMovementRadius(predecessors, node, 3, 1);
-
-        //longjump even
-        addStraightMovementRadius(predecessors, node, 4, 0);
-        addDiagonalMovementRadius(predecessors, node, 3, 0);
-
-        //longjump up
-        addStraightMovementRadius(predecessors, node, 4, -1);
-
-        //longjump down
-        addStraightMovementRadius(predecessors, node, 5, 1);
-        addStraightMovementRadius(predecessors, node, 4, 1);
-
-        //todo add parcour predecessors when implemented
-
-        return predecessors;
-    }
-
-    //essentially the same as the predecessors only upside down
-    @Override
-    public ArrayList<INode> getSuccessors(INode node) {
-
-        ArrayList<INode> successors = new ArrayList<>();
-
-        //white
-
-        //blue
-
-        //yellow
-
-        //red
-
-        //purple
-
-        /**
-        for(int i =0; i < 3;i++) {
-            for(int l =0; l < 3;l++) {
-                for(int f =0; f < 3;f++) {
-                    successors.add(get(node.getX() + l - 1,node.getY() + i - 1,node.getZ() + f - 1));
-                    if(i==1 && l==1 && f==0) f++ ; //skip one in order to not get the node itself
+            //adding redjumps and placable purplejumps
+            for(Directions direction : Directions.values()) {
+                if(direction.diagonal) {
+                    INode jnode = get(node.getX() + direction.x * 3, node.getY() - 1, node.getZ() + direction.z * 3, false);
+                    Jumps bestjump = movementHelper.getBestPossibleJump(jnode, direction);
+                    if(bestjump == Jumps.DJ_RED || (bestjump == Jumps.DJ_PURPLE && movementHelper.isPlaceableBlock(new BetterBlockPos(node.getCordX(), node.getCordY(), node.getCordZ())))) {
+                        pre.add(jnode);
+                    }
+                } else {
+                    INode jnode = get(node.getX() + direction.x * 4, node.getY() - 1, node.getZ() + direction.z * 4, false);
+                    Jumps bestjump = movementHelper.getBestPossibleJump(jnode, direction);
+                    if(bestjump == Jumps.SJ_RED || (bestjump == Jumps.SJ_PURPLE && movementHelper.isPlaceableBlock(new BetterBlockPos(node.getCordX(), node.getCordY(), node.getCordZ())))) {
+                        pre.add(jnode);
+                    }
                 }
             }
         }
 
 
-        //add additional down walk successors
-        addStraightMovementRadius(successors, node, 2, -1);
-        addDiagonalMovementRadius(successors, node, 2, -1);
-
-        //jump predecessors
-
-        //short jump even
-        addStraightMovementRadius(successors, node, 2, 0);
-        addDiagonalMovementRadius(successors, node, 2, 0);
-
-        //shortjump up
-        addStraightMovementRadius(successors, node, 2, 1);
-        addDiagonalMovementRadius(successors, node, 2, 1);
-
-        //shortjump down
-        addStraightMovementRadius(successors, node, 3, -1);
-
-        //mediumjump even
-        addStraightMovementRadius(successors, node, 3, 0);
-
-        //mediumjump up
-        addStraightMovementRadius(successors, node, 3, 1);
-
-        //mediumjump down
-        addStraightMovementRadius(successors, node, 4, -1);
-        addStraightMovementRadius(successors, node, 3, -1);
-
-        //longjump even
-        addStraightMovementRadius(successors, node, 4, 0);
-        addDiagonalMovementRadius(successors, node, 3, 0);
-
-        //longjump up
-        addStraightMovementRadius(successors, node, 4, 1);
-
-        //longjump down
-        addStraightMovementRadius(successors, node, 5, -1);
-        addStraightMovementRadius(successors, node, 4, -1);
-
-        //todo add parcour predecessors when implemented
-    **/
-        return successors;
+        return pre;
     }
+
+    private void addJumpSuccessors(INode node ,ArrayList<INode> suc, Jumps bestPossibleJump, Directions direction) {
+
+        if(bestPossibleJump == null) {
+            return; //jumps in this direction arent possible
+        }
+
+        for(int i = 1; i < bestPossibleJump.radius; i++) {
+            suc.add(get(node.getX() + direction.x * i, node.getY() + 1, node.getZ() + direction.z * i, true));
+        }
+
+        if (bestPossibleJump == Jumps.SJ_PURPLE || bestPossibleJump == Jumps.DJ_PURPLE) {
+            if(movementHelper.isPlaceableBlock(new BetterBlockPos(node.getX() + direction.x * bestPossibleJump.radius, node.getY() + 1, node.getZ() + direction.z * bestPossibleJump.radius))) {
+                suc.add(get(node.getX() + direction.x * bestPossibleJump.radius, node.getY() + 1, node.getZ() + direction.z * bestPossibleJump.radius, false));
+            }
+            suc.add(get(node.getX() + direction.x * bestPossibleJump.radius, node.getY(), node.getZ() + direction.z * bestPossibleJump.radius, true));
+        } else {
+            suc.add(get(node.getX() + direction.x * bestPossibleJump.radius, node.getY() + 1, node.getZ() + direction.z * bestPossibleJump.radius, bestPossibleJump.airable));
+        }
+    }
+
+    private void addJumpPredecessors(INode node, ArrayList<INode> pre, Jumps bestPossibleInvertedJump, Directions direction) {
+
+        if(bestPossibleInvertedJump == null) {
+            return; //jumps from this direction arent possible
+        }
+
+        for(int i = 1; i < bestPossibleInvertedJump.radius; i++) {
+            pre.add(get(node.getX() + direction.x * i, node.getY() - 1, node.getZ() + direction.z * i, false));
+        }
+
+        if(bestPossibleInvertedJump == Jumps.SJ_PURPLE || bestPossibleInvertedJump == Jumps.DJ_PURPLE) {
+            pre.add(get(node.getX() + direction.x * bestPossibleInvertedJump.radius, node.getY(), node.getZ() + direction.z * bestPossibleInvertedJump.radius, false));
+        } else {
+            pre.add(get(node.getX() + direction.x * bestPossibleInvertedJump.radius, node.getY() - 1, node.getZ() + direction.z * bestPossibleInvertedJump.radius, bestPossibleInvertedJump.airable));
+        }
+    }
+
+
+
 
     /**
     @Override
@@ -299,10 +236,6 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
 
     public BlockState getBlock(INode node) {
         return world.getBlockState(new BetterBlockPos(node.getX(),node.getY(),node.getZ()));
-    }
-
-    private void addMovementRadius(ArrayList<INode>, Jumps jump,) {
-
     }
 
 

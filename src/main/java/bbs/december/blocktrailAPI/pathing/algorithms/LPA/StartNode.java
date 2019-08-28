@@ -2,6 +2,8 @@ package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
 import bbs.december.blocktrail.pathing.PositionHashMap;
 
+import java.util.ArrayList;
+
 public class StartNode implements INode {
 
     private final int x, y, z;
@@ -80,6 +82,21 @@ public class StartNode implements INode {
     }
 
     @Override
+    public double getCordX() {
+        return x + 0.5;
+    }
+
+    @Override
+    public double getCordY() {
+        return y + 0.5;
+    }
+
+    @Override
+    public double getCordZ() {
+        return z + 0.5;
+    }
+
+    @Override
     public double getG() {
         return g;
     }
@@ -118,5 +135,15 @@ public class StartNode implements INode {
     @Override
     public boolean isLocallyConsistent() {
         return rhs == g;
+    }
+
+    @Override
+    public ArrayList<INode> getPredecessors() {
+        return null; //startnode shouldnt have any predecessors
+    }
+
+    @Override
+    public ArrayList<INode> getSuccessors() {
+        return map.getSuccessors(this);
     }
 }

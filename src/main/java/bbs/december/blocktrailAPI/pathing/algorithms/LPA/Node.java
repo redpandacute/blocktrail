@@ -118,14 +118,15 @@ public class Node implements INode {
     public double calculateRHS() {
         rhs = INFINITY;
 
-        /**
+
         for(INode curr : map.getPredecessors(this)) {
             if(curr.getG() + curr.moveCost(this) < rhs) { //Todo implement cost function
                 rhs = curr.getG() + curr.moveCost(this);
             }
         }
-         **/ //todo: implement this
+          //todo: implement this
 
+        /** this is not up to date anymore
         for(int i =0; i < 3;i++) {
             for(int l =0; l < 3;l++) {
                 for(int f =0; f < 3;f++) {
@@ -137,6 +138,7 @@ public class Node implements INode {
                 }
             }
         }
+         **/
 
         return rhs;
     }
@@ -148,12 +150,12 @@ public class Node implements INode {
 
     @Override
     public ArrayList<INode> getPredecessors() {
-        return null;
+        return map.getPredecessors(this);
     }
 
     @Override
     public ArrayList<INode> getSuccessors() {
-        return null;
+        return map.getSuccessors(this);
     }
 
     @Override

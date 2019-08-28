@@ -34,7 +34,6 @@ public class LPA implements IPathFindingAlgorithm {
 
             if (node.getG() != node.getRHS()) {
                 priorityQueue.add(node);
-                //node.calculateKey(); //is already implemented into add function of the priority queue
             }
         }
     }
@@ -48,12 +47,13 @@ public class LPA implements IPathFindingAlgorithm {
             if(node.getG() > node.getRHS()) {
                 node.setG(node.getRHS());
 
-                /**
+
                 for(INode curr : positionHashMap.getSuccessors(node)) {
                     updateNode(curr);
                 }
-                 **/ //todo: determine how i want this to be done
+                 //todo: determine how i want this to be done
 
+                /**
                 for(int i =0; i < 3;i++) {
                     for(int l =0; l < 3;l++) {
                         for(int f =0; f < 3;f++) {
@@ -64,17 +64,18 @@ public class LPA implements IPathFindingAlgorithm {
                         }
                     }
                 }
+                 **/
             } else {
                 node.setG(Double.POSITIVE_INFINITY);
 
-                /**
+
                  for(INode curr : positionHashMap.getSuccessors(node)) {
                  updateNode(curr);
                  }
 
                  updateNode(node); //in this case, the node itself should also get updated
-                 **/
 
+                /**
                 for(int i =0; i < 3;i++) {
                     for(int l =0; l < 3;l++) {
                         for(int f =0; f < 3;f++) {
@@ -83,6 +84,7 @@ public class LPA implements IPathFindingAlgorithm {
                         }
                     }
                 }
+                 **/
             }
         }
     }

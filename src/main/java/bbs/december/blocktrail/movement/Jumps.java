@@ -10,7 +10,9 @@ public enum Jumps {
     DJ_WHITE(1, true, true),
     DJ_YELLOW(2, true, true),
     DJ_RED(3, false, true),
-    DJ_PURPLE(3, true, true);
+    DJ_PURPLE(3, true, true),
+
+    J_BLACK(0, true, false);
 
     public final int radius;
     public final boolean airable, diagonal;
