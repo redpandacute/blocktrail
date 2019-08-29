@@ -36,20 +36,21 @@ public class Path implements Iterable<INode> {
     private boolean findLPAPath() {
         LPA lpa = (LPA) algorithm;
 
-        add(lpa.goalNode); //LPA starts its search for the optimal path from the goalNode
+        add(lpa.getPositionHashMap().getGoalNode()); //LPA starts its search for the optimal path from the goalNode
 
-        INode node = lpa.goalNode;
+        INode node = lpa.getPositionHashMap().getGoalNode();
 
         do { //run until the StartNode has been reached
-            node = findNextNode(node);
+            //node = findNextNode(node);
             add(node);
         } while(!node.getClass().isInstance(StartNode.class));
 
         return true;
     }
 
-
+/**
     private INode findNextNode(INode node) {
+
 
         INode next = null;
         double smallest = Double.POSITIVE_INFINITY;
@@ -57,7 +58,7 @@ public class Path implements Iterable<INode> {
         for(int i = 0; i<3;i++) {
             for(int l = 0; l<3; l++) {
                 for(int f = 0; f<3;f++) {
-                    INode curr = algorithm.getPositionHashMap().get(node.getX() + i - 1,node.getY() + l - 1, node.getZ() + f - 1);
+                    INode curr = algorithm.getPositionHashMap().get(node.getX() + i - 1,node.getY() + l - 1, node.getZ() + f - 1,);
 
                     if(curr.moveCost(node) + curr.getG() < smallest) {
                         next = curr;
@@ -72,7 +73,7 @@ public class Path implements Iterable<INode> {
 
         return next;
     }
-
+         **/
 
     public void add(INode node) {
         list.add(list.size(), node);

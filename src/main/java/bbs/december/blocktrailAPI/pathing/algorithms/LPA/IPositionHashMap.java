@@ -13,6 +13,9 @@ public interface IPositionHashMap {
     StartNode getStartNode();
     GoalNode getGoalNode();
 
+    void setStartNode(StartNode node);
+    void setGoalNode(GoalNode node);
+
     ArrayList<INode> getPredecessors(INode node);
     ArrayList<INode> getSuccessors(INode node);
 }

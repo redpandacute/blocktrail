@@ -102,6 +102,18 @@ dependencies {
     // compile "some.group:artifact:version
     compile 'com.mojang:brigadier:1.0.17'
 
+
+    //ASM dependency
+    // https://mvnrepository.com/artifact/org.ow2.asm/asm
+    //compile group: 'org.ow2.asm', name: 'asm', version: '7.1'
+    // https://mvnrepository.com/artifact/org.ow2.asm/asm-util
+    //compile group: 'org.ow2.asm', name: 'asm-util', version: '7.1'
+
+    implementation 'org.ow2.asm:asm:7.1'
+    implementation 'org.ow2.asm:asm-util:7.1'
+
+
+
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env

@@ -2,6 +2,7 @@ package bbs.december.blocktrail.movement;
 
 public enum Moves {
 
+    /**
     //on spot moves (turning airnode into regular block and vis versa)
     OSM_DIG(0, 0, 0) {
         //turns current node into an airnode

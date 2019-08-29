@@ -1,5 +1,6 @@
 package bbs.december.blocktrail;
 
+import bbs.december.blocktrail.test.TestCommand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,10 +28,13 @@ public class blocktrail
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStartingEvent);
     }
 
-    @SubscribeEvent //unsure if this works but technically it should
-    private void serverStartingEvent(FMLServerStartingEvent e) { };
+
+    private void serverStartingEvent(FMLServerStartingEvent e) {
+        TestCommand.register(e.getCommandDispatcher());
+    }
 
     private void serverSetup(final FMLCommonSetupEvent e) {
         LOGGER.info(MOD_ID + " setup");

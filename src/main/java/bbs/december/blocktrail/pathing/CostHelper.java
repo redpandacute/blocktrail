@@ -22,6 +22,18 @@ public class CostHelper implements ICostHelper {
             //todo calculate ideal cost (if diagonal or not)
         } else {
             //todo calculate regular cost based on the position and the difficulty of the movement itself
+
+            int diffX = Math.abs(originNode.getX() - destinationNode.getX());
+            int diffY = destinationNode.getY() - originNode.getY();
+            int diffZ = Math.abs(originNode.getZ() - destinationNode.getZ());
+
+            if(diffX == 0 && diffZ == 0) {
+                if(diffY < 0) {
+
+                } else {
+
+                }
+            }
         }
 
         return 0;

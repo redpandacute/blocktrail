@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 public class PositionHashMap extends HashMap<String, INode> implements IPositionHashMap {
 
-    public final StartNode startNode;
-    public final GoalNode goalNode;
+    public StartNode startNode;
+    public GoalNode goalNode;
 
     private final World world;
 
@@ -30,6 +30,17 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
         movementHelper = new MovementHelper(this);
 
         this.world = world;
+    }
+
+    public PositionHashMap(World world) {
+        this.startNode = startNode;
+        this.goalNode = goalNode;
+
+        costHelper = new CostHelper(this);
+        this.world = world;
+        movementHelper = new MovementHelper(this);
+
+
     }
 
     public World getWorld() {
@@ -56,6 +67,16 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
         return goalNode;
     }
 
+    @Override
+    public void setStartNode(StartNode startNode) {
+        this.startNode = startNode;
+    }
+
+    @Override
+    public void setGoalNode(GoalNode goalNode) {
+        this.goalNode = goalNode;
+    }
+
     //finding all possible airnodes
     @Override
     public ArrayList<INode> getSuccessors(INode node) {
@@ -68,6 +89,9 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
                 return suc;
             } else {
                 suc.add(get(node.getX(), node.getY() - 1, node.getZ(), true)); //todo implement liquid management, for now it should just avoid liquids at all cost
+                if(movementHelper.isPlaceableBlock(new BetterBlockPos(node.getCordX(), node.getCordY(), node.getCordZ()))) {
+                    suc.add(get(node.getX(), node.getY() - 1, node.getZ(), false));
+                }
                 return suc;
             }
         }
