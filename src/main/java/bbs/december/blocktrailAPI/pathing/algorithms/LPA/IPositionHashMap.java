@@ -1,5 +1,7 @@
 package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
+import net.minecraft.world.World;
+
 import java.util.ArrayList;
 
 public interface IPositionHashMap {
@@ -15,6 +17,9 @@ public interface IPositionHashMap {
 
     void setStartNode(StartNode node);
     void setGoalNode(GoalNode node);
+
+
+    World getWorld();
 
     ArrayList<INode> getPredecessors(INode node);
     ArrayList<INode> getSuccessors(INode node);

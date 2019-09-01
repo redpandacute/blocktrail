@@ -84,7 +84,10 @@ public class MovementHelper {
                     BetterBlockPos ceilingPos1 = new BetterBlockPos(node.getCordX() + direction.x * 2, node.getCordY() + 3, node.getCordZ() + direction.z * 2);
                     BetterBlockPos ceilingPos2 = new BetterBlockPos(node.getCordX() + direction.x * 3, node.getCordY() + 3, node.getCordZ() + direction.z * 3);
 
-                    if (!world.isAirBlock(ceilingPos1) || !world.isAirBlock(ceilingPos2)) {
+                    BetterBlockPos dceilingPos1 = new BetterBlockPos(node.getCordX() + direction.x * 2, node.getCordY() + 3, node.getCordZ() + direction.z * 3);
+                    BetterBlockPos dceilingPos2 = new BetterBlockPos(node.getCordX() + direction.x * 3, node.getCordY() + 3, node.getCordZ() + direction.z * 2);
+
+                    if (!world.isAirBlock(ceilingPos1) || !world.isAirBlock(ceilingPos2) || !world.isAirBlock(dceilingPos1) || !world.isAirBlock(dceilingPos2)) {
                         r--;
                         break;
                     }
@@ -178,7 +181,7 @@ public class MovementHelper {
             while (r < 3) {
                 BetterBlockPos pos = new BetterBlockPos(node.getCordX() + direction.x * r, node.getCordY() - 1, node.getCordZ() + direction.z * r);
 
-                if (!world.isAirBlock(pos.up(2)) && !world.isAirBlock(pos.up()) && !world.isAirBlock(pos)) {
+                if (!world.isAirBlock(pos.up(2)) || !world.isAirBlock(pos.up()) || !world.isAirBlock(pos)) {
                     //the jump that is being checked is not possible
                     r--;
                     break;
@@ -220,6 +223,7 @@ public class MovementHelper {
                 r++;
             }
 
+            /**
             //checking the purple jump
             if(r == 3) {
 
@@ -247,6 +251,7 @@ public class MovementHelper {
                 }
             }
 
+            **/
             switch (r) {
                 case 1:
                     return Jumps.DJ_WHITE;
@@ -266,7 +271,7 @@ public class MovementHelper {
             while (r < 4) {
                 BetterBlockPos pos = new BetterBlockPos(node.getCordX() + direction.x * r, node.getCordY() - 1, node.getCordZ() + direction.z * r);
 
-                if (!world.isAirBlock(pos.up(2)) && !world.isAirBlock(pos.up()) && !world.isAirBlock(pos)) {
+                if (!world.isAirBlock(pos.up(2)) || !world.isAirBlock(pos.up()) || !world.isAirBlock(pos)) {
                     //the jump that is being checked is not possible
                     r--;
                     break;
@@ -289,6 +294,7 @@ public class MovementHelper {
                 r++;
             }
 
+            /**
             //checking the purple jump
             if(r == 4) {
 
@@ -308,28 +314,146 @@ public class MovementHelper {
                     }
                 }
             }
-
+            **/
 
             switch (r) {
                 case 1:
                     return Jumps.SJ_WHITE;
 
+
                 case 2:
-                    return Jumps.SJ_BLUE;
+                    return Jumps.SJ_BLUE; //has to be checked by calling method, if block y+2 of node is air
 
                 case 3:
-                    return Jumps.SJ_YELLOW; //has to be checked by calling method, if block y+2 of node is air
+                    return Jumps.SJ_YELLOW;
 
                 case 4:
-                    return Jumps.SJ_RED;
-
-                case 5:
-                    return Jumps.SJ_PURPLE;
+                    return Jumps.DJ_RED;
 
                 default:
                     return null; //jumping in this direction isnt possible
 
             }
         }
+    }
+
+    public boolean isPurplePredecessorPossible(INode node, Directions direction) {
+
+        int r = 1;
+
+        if(direction.diagonal) {
+
+            BetterBlockPos ceilingPos1 = new BetterBlockPos(node.getCordX() + direction.x, node.getCordY() + 3, node.getCordZ() + direction.z);
+            BetterBlockPos ceilingPos2 = new BetterBlockPos(node.getCordX(), node.getCordY() + 3, node.getCordZ());
+
+            BetterBlockPos ceilingDPos1 = new BetterBlockPos(node.getCordX(), node.getCordY() + 3, node.getCordZ() + direction.z);
+            BetterBlockPos ceilingDPos2 = new BetterBlockPos(node.getCordX() + direction.x, node.getCordY() + 3, node.getCordZ());
+
+
+            if (!world.isAirBlock(ceilingPos1) || !world.isAirBlock(ceilingPos2) || !world.isAirBlock(ceilingDPos1) || !world.isAirBlock(ceilingDPos2)) {
+                return false;
+            }
+
+            while (r <= 3) {
+                BetterBlockPos pos = new BetterBlockPos(node.getCordX() + direction.x * r, node.getCordY(), node.getCordZ() + direction.z * r);
+
+                if (!world.isAirBlock(pos.up(2)) && !world.isAirBlock(pos.up())) {
+                    //the jump that is being checked is not possible
+                    return false;
+                }
+
+
+                //diagonal movement requires the adjecent blocks also to be air
+                BetterBlockPos pos2 = new BetterBlockPos(node.getCordX() + direction.x * (r - 1), node.getCordY(), node.getCordZ() + direction.z * r);
+                BetterBlockPos pos3 = new BetterBlockPos(node.getCordX() + direction.x * r, node.getCordY(), node.getCordZ() + direction.z * (r - 1));
+
+                if (!world.isAirBlock(pos2) || !world.isAirBlock(pos2.up()) || !world.isAirBlock(pos2.up(2))) {
+                    return false;
+                }
+
+                if (!world.isAirBlock(pos3) || !world.isAirBlock(pos3.up()) || !world.isAirBlock(pos3.up(2))) {
+                    return false;
+                }
+
+
+                //checking if maxjump has been found
+                if(!world.isAirBlock(pos) && r != 3) {
+                    return false;
+                }
+
+                r++;
+            }
+
+            BetterBlockPos pos = new BetterBlockPos(node.getCordX() + direction.x * 3, node.getCordY(), node.getCordZ() + direction.z * 3);
+
+            if(!isPlaceableBlock(pos) && world.isAirBlock(pos)) {
+                return false;
+            }
+            return true;
+
+        } else {
+
+            BetterBlockPos pos1 = new BetterBlockPos(node.getCordX() + direction.x * 1, node.getCordY() + 3, node.getCordZ() + direction.z * 1);
+            BetterBlockPos pos2 = new BetterBlockPos(node.getCordX() + direction.x * 2, node.getCordY() + 3, node.getCordZ() + direction.z * 2);
+
+            if (!world.isAirBlock(pos1) || !world.isAirBlock(pos2)) {
+                return false;
+            }
+
+            while (r <= 4) {
+                BetterBlockPos pos = new BetterBlockPos(node.getCordX() + direction.x * r, node.getCordY(), node.getCordZ() + direction.z * r);
+
+                if (!world.isAirBlock(pos.up(2)) && !world.isAirBlock(pos.up())) {
+                    //the jump that is being checked is not possible
+                    return false;
+                }
+
+                //checking if we have found our maxJump
+                if (!world.isAirBlock(pos) && r != 4) {
+                    return false;
+                }
+
+                r++;
+            }
+        }
+
+        BetterBlockPos pos = new BetterBlockPos(node.getCordX() + direction.x * 4, node.getCordY(), node.getCordZ() + direction.z * 4);
+
+        if(!isPlaceableBlock(pos) && world.isAirBlock(pos)) {
+            return false;
+        }
+        return true;
+    }
+
+    public Walks isWalkable(INode node, Directions direction) {
+        BetterBlockPos pos = new BetterBlockPos(node.getX() + direction.x, node.getY(), node.getZ() + direction.z);
+
+        if(direction.diagonal) {
+            BetterBlockPos dpos1 = new BetterBlockPos(node.getX() + direction.x, node.getY(), node.getZ());
+            BetterBlockPos dpos2 = new BetterBlockPos(node.getX(), node.getY(), node.getZ() + direction.z);
+
+            if(!world.isAirBlock(dpos1) || !world.isAirBlock(dpos1.up())) {
+                return null;
+            }
+
+            if(!world.isAirBlock(dpos2) || !world.isAirBlock(dpos2.up())) {
+                return null;
+            }
+
+            if(!world.isAirBlock(pos) || !world.isAirBlock(pos.up())) {
+                return null;
+            }
+
+            if(world.isAirBlock(pos.down()) && !isPlaceableBlock(pos)) {
+                //return Walks.D_DROP; //we are not implementing drops just now
+                return null;
+            }
+
+            return Walks.D_WALK;
+
+        } else {
+            return Walks.S_WALK;
+        }
+
     }
 }

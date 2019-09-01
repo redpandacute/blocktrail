@@ -1,5 +1,7 @@
 package bbs.december.blocktrail.movement;
 
+import bbs.december.blocktrailAPI.pathing.algorithms.LPA.INode;
+
 public enum Jumps {
     SJ_WHITE(1, true, false),
     SJ_BLUE(2, true, false),

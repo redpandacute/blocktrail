@@ -12,7 +12,7 @@ public class StartNode implements INode {
 
     private Key key;
 
-    private PositionHashMap map;
+    private IPositionHashMap map;
 
     public StartNode(int x, int y, int z, PositionHashMap map) {
         this.x = x;
@@ -26,18 +26,10 @@ public class StartNode implements INode {
 
     @Override
     public double heuristic() {
-        double h_heuristic = getHorizontalHeuristic(map.goalNode.getX(), map.goalNode.getZ());
-        double v_heuristic = getVerticalHeuristic(map.goalNode.getY());
+        double h_heuristic = getHorizontalHeuristic(map.getGoalNode().getX(), map.getGoalNode().getZ());
+        double v_heuristic = getVerticalHeuristic(map.getGoalNode().getY());
 
         return v_heuristic + h_heuristic;
-    }
-
-    @Override
-    public double moveCost(INode node) {
-
-        //todo implement movement cost
-
-        return 0;
     }
 
 
@@ -145,5 +137,20 @@ public class StartNode implements INode {
     @Override
     public ArrayList<INode> getSuccessors() {
         return map.getSuccessors(this);
+    }
+
+    @Override
+    public IPositionHashMap getHashMap() {
+        return map;
+    }
+
+    @Override
+    public void setHashMap(IPositionHashMap map) {
+        this.map = map;
+    }
+
+    @Override
+    public BetterBlockPos getBlockPos() {
+        return new BetterBlockPos(x, y, z);
     }
 }

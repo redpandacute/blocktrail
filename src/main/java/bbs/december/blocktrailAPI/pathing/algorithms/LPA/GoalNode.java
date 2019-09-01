@@ -8,7 +8,7 @@ public class GoalNode implements INode {
 
     private final int x, y, z;
 
-    private PositionHashMap map;
+    private IPositionHashMap map;
 
     private double g = INFINITY, rhs = INFINITY;
 
@@ -26,14 +26,6 @@ public class GoalNode implements INode {
     public double heuristic() {
 
         return 0; //LAP expands from the startnode towards the goalnode, thus the heuristic value of the goalnode has to be 0;
-    }
-
-    @Override
-    public double moveCost(INode node) {
-
-        //todo implement moveCost
-
-        return 0;
     }
 
     @Override
@@ -114,5 +106,20 @@ public class GoalNode implements INode {
     @Override
     public ArrayList<INode> getSuccessors() {
         return null; //goalnode shouldnt have any successors
+    }
+
+    @Override
+    public IPositionHashMap getHashMap() {
+        return map;
+    }
+
+    @Override
+    public void setHashMap(IPositionHashMap map) {
+        this.map = map;
+    }
+
+    @Override
+    public BetterBlockPos getBlockPos() {
+        return new BetterBlockPos(x, y, z);
     }
 }

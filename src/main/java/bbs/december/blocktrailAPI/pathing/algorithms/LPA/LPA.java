@@ -11,6 +11,7 @@ public class LPA implements IPathFindingAlgorithm {
     IPositionHashMap positionHashMap;
 
     boolean active = false;
+    private Path path = null;
 
     public LPA(IPositionHashMap positionHashMap, String threadName) {
         this.threadName = threadName;
@@ -89,15 +90,21 @@ public class LPA implements IPathFindingAlgorithm {
         }
     }
 
-    public void updatePath() {
+    public void updateGrid() {
          computeShortestPath();
 
          //todo update path
     }
 
+    public void updatePath() {
+            this.path = new Path(this);
+            path.display();
+    }
+
     public void run() {
 
         computeShortestPath();
+        updatePath();
 
         // todo needs a listener that updates the algorithm on a mapupdate
 

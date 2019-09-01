@@ -45,13 +45,6 @@ public class Node implements INode {
         return v_heuristic + h_heuristic;
     }
 
-    @Override
-    public double moveCost(INode node) {
-
-        //todo implement movecost
-
-        return map.getCostHelper().moveCost(this, node);
-    }
 
     @Override
     public int getX() {
@@ -156,6 +149,21 @@ public class Node implements INode {
     @Override
     public ArrayList<INode> getSuccessors() {
         return map.getSuccessors(this);
+    }
+
+    @Override
+    public IPositionHashMap getHashMap() {
+        return map;
+    }
+
+    @Override
+    public void setHashMap(IPositionHashMap map) {
+        this.map = map;
+    }
+
+    @Override
+    public BetterBlockPos getBlockPos() {
+        return new BetterBlockPos(x, y, z);
     }
 
     @Override

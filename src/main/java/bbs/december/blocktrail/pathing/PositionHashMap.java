@@ -3,6 +3,7 @@ package bbs.december.blocktrail.pathing;
 import bbs.december.blocktrail.movement.Directions;
 import bbs.december.blocktrail.movement.Jumps;
 import bbs.december.blocktrail.movement.MovementHelper;
+import bbs.december.blocktrail.movement.Walks;
 import bbs.december.blocktrailAPI.pathing.algorithms.LPA.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -43,6 +44,7 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
 
     }
 
+    @Override
     public World getWorld() {
         return world;
     }
@@ -83,7 +85,7 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
 
         ArrayList<INode> suc = new ArrayList<>();
 
-        if(node.getClass().isInstance(AirNode.class)) {
+        if(node instanceof AirNode) {
             if(world.getBlockState(new BlockPos(node.getCordX(), node.getCordY() - 1, node.getZ())).isSolid()) { //todo get a better blockhelper for solid check
                 suc.add(get(node.getX(),node.getY(), node.getZ(), false)); //migth create a problem with the reaction time when it comes to placing the water but it should be okey for now
                 return suc;
@@ -100,7 +102,7 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
 
 
         //getting all possible successors for a regular node
-        if(world.isAirBlock(new BetterBlockPos(node.getCordX(), node.getCordY() + 1, node.getCordZ()))) {
+        if(world.isAirBlock(new BetterBlockPos(node.getCordX(), node.getCordY() + 2, node.getCordZ()))) {
             //Blackjump is possible
             suc.add(get(node.getX(), node.getY() + 1, node.getZ(), true));
 
@@ -108,13 +110,16 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
                 addJumpSuccessors(node, suc, movementHelper.getBestPossibleJump(node, direction), direction);
             }
         }
-        //white traverse movement -- these always get added since the algorithm could be bridging
-        addStraightMovementRadius(suc, node, 1, 0, false);
-        addDiagonalMovementRadius(suc, node, 1, 0, false);
+
+        for(Directions direction : Directions.values()) {
+            Walks walk = movementHelper.isWalkable(node, direction);
+
+            if(walk != null) {
+                suc.add(get(node.getX() + direction.x, node.getY(), node.getZ() + direction.z, false));
+            }
+        }
 
         //white drop movement todo: add dropmovement (left out in order to finally make some progress :) )
-        //addStraightMovementRadius(suc, node, 1, -1, true);
-        //addDiagonalMovementRadius(suc, node, 1, -1, true); //leaving this out for the moment to avoid problems with the
         return suc;
     }
 
@@ -123,22 +128,27 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
 
         ArrayList<INode> pre = new ArrayList<>();
 
-        if(node.getClass().isInstance(AirNode.class)) {
-            add(get(node.getX(), node.getY() + 1, node.getZ(), true));
+        if(node instanceof AirNode) {
+            pre.add(get(node.getX(), node.getY() + 1, node.getZ(), true));
 
 
             //adding all the possible jumps
 
             for(Directions direction : Directions.values()) { //adding all the possible jumppredecessors in only 2 lines :) suck it baritone
-                addJumpPredecessors(node, pre, movementHelper.getBestPossibleJump(node, direction), direction);
+                addJumpPredecessors(node, pre, movementHelper.getBestPossibleInvertedJump(node, direction), direction);
             }
 
         } else {
             //if the current node is a regular node, it can either be reached by a red jump, by an airnode inside the current node or an adjecent block (walking)
-            addStraightMovementRadius(pre, node, 1, 0, false);
-            addDiagonalMovementRadius(pre, node, 1, 0, false);
+            for(Directions direction : Directions.values()) { //adding all the possible jumpsuccessors in only 2 lines :) suck it baritone
+                Walks walk = movementHelper.isWalkable(node, direction);
 
-            add(get(node.getX(), node.getY(), node.getZ(), true));
+                if(walk != null) {
+                    pre.add(get(node.getX() + direction.x, node.getY(), node.getZ() + direction.z, false));
+                }
+            }
+
+            pre.add(get(node.getX(), node.getY(), node.getZ(), true));
 
             //adding redjumps and placable purplejumps
             for(Directions direction : Directions.values()) {
@@ -184,6 +194,17 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
 
     private void addJumpPredecessors(INode node, ArrayList<INode> pre, Jumps bestPossibleInvertedJump, Directions direction) {
 
+
+        if(movementHelper.isPurplePredecessorPossible(node, direction)) {
+
+            if(direction.diagonal) {
+                    pre.add(get(node.getX() + direction.x * 3, node.getY(), node.getZ() + direction.z * 3, false));
+            } else {
+                    pre.add(get(node.getX() + direction.x * 4, node.getY(), node.getZ() + direction.z * 4, false));
+            }
+
+        }
+
         if(bestPossibleInvertedJump == null) {
             return; //jumps from this direction arent possible
         }
@@ -192,10 +213,8 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
             pre.add(get(node.getX() + direction.x * i, node.getY() - 1, node.getZ() + direction.z * i, false));
         }
 
-        if(bestPossibleInvertedJump == Jumps.SJ_PURPLE || bestPossibleInvertedJump == Jumps.DJ_PURPLE) {
-            pre.add(get(node.getX() + direction.x * bestPossibleInvertedJump.radius, node.getY(), node.getZ() + direction.z * bestPossibleInvertedJump.radius, false));
-        } else {
-            pre.add(get(node.getX() + direction.x * bestPossibleInvertedJump.radius, node.getY() - 1, node.getZ() + direction.z * bestPossibleInvertedJump.radius, bestPossibleInvertedJump.airable));
+        if(bestPossibleInvertedJump != Jumps.DJ_PURPLE && bestPossibleInvertedJump != Jumps.SJ_PURPLE) {
+            pre.add(get(node.getX() + direction.x * bestPossibleInvertedJump.radius, node.getY() - 1, node.getZ() + direction.z * bestPossibleInvertedJump.radius, false));
         }
     }
 
@@ -279,4 +298,6 @@ public class PositionHashMap extends HashMap<String, INode> implements IPosition
         list.add(get(node.getX() - r,node.getY() + y,node.getZ() - r, airnode));
         list.add(get(node.getX() - r,node.getY() + y,node.getZ() + r, airnode));
     }
+
+
 }

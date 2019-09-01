@@ -22,9 +22,9 @@ public class Path implements Iterable<INode> {
     }
 
     private void findPath() {
-        if(algorithm.getClass().isInstance(LPA.class)) {
+        if(algorithm instanceof LPA) {
             findLPAPath();
-        } else if(algorithm.getClass().isInstance(DLite.class)) {
+        } else if(algorithm instanceof DLite) {
             findDLitePath();
         }
     }
@@ -41,39 +41,30 @@ public class Path implements Iterable<INode> {
         INode node = lpa.getPositionHashMap().getGoalNode();
 
         do { //run until the StartNode has been reached
-            //node = findNextNode(node);
+            node = findNextNode(node);
             add(node);
-        } while(!node.getClass().isInstance(StartNode.class));
+        } while(!(node instanceof StartNode));
 
         return true;
     }
 
-/**
+
     private INode findNextNode(INode node) {
 
 
         INode next = null;
         double smallest = Double.POSITIVE_INFINITY;
 
-        for(int i = 0; i<3;i++) {
-            for(int l = 0; l<3; l++) {
-                for(int f = 0; f<3;f++) {
-                    INode curr = algorithm.getPositionHashMap().get(node.getX() + i - 1,node.getY() + l - 1, node.getZ() + f - 1,);
-
-                    if(curr.moveCost(node) + curr.getG() < smallest) {
-                        next = curr;
-                        smallest = curr.moveCost(node) + curr.getG();
-                    }
-
-                    if(i == 1 && l ==1 && f == 0) f++; //again, not selecting the node itself
-
-                }
+        for(INode curr : node.getPredecessors()) {
+            if(curr.getG() + curr.heuristic() < smallest) {
+                smallest = curr.getG() + curr.heuristic();
+                next = curr;
             }
         }
 
         return next;
     }
-         **/
+
 
     public void add(INode node) {
         list.add(list.size(), node);
@@ -88,5 +79,11 @@ public class Path implements Iterable<INode> {
     @Override
     public void forEach(Consumer<? super INode> action) {
 
+    }
+
+    public void display() {
+        for(INode node : this) {
+
+        }
     }
 }

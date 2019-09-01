@@ -41,14 +41,6 @@ public class AirNode implements INode {
     }
 
     @Override
-    public double moveCost(INode node) {
-
-        //todo implement movecost
-
-        return 0;
-    }
-
-    @Override
     public int getX() {
         return x;
     }
@@ -129,6 +121,16 @@ public class AirNode implements INode {
         return map.getSuccessors(this);
     }
 
+    @Override
+    public IPositionHashMap getHashMap() {
+        return map;
+    }
+
+    @Override
+    public void setHashMap(IPositionHashMap map) {
+        this.map = map;
+    }
+
     private double getVerticalHeuristic(int gy) {
 
         int y_diff = Math.abs(gy - y);
@@ -151,5 +153,10 @@ public class AirNode implements INode {
         heuristic =+ (x_diff + z_diff) * STRAIGHT_COST;
 
         return heuristic;
+    }
+
+    @Override
+    public BetterBlockPos getBlockPos() {
+        return new BetterBlockPos(x, y, z);
     }
 }

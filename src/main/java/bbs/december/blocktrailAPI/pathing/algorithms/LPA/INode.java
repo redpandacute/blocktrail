@@ -1,10 +1,10 @@
 package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
+import bbs.december.blocktrail.pathing.CostHelper;
+
 import java.util.ArrayList;
 
 public interface INode {
-
-
 
     double STRAIGHT_COST = 1;
     double DIAGONAL_COST = 1.4; //Actually sqrt(2) but it makes sense to just approximate it
@@ -13,7 +13,9 @@ public interface INode {
     double INFINITY =   Double.POSITIVE_INFINITY;
 
     double heuristic();
-    double moveCost(INode node);
+    default double moveCost(INode node) {
+        return new CostHelper(getHashMap()).move(this, node).getCost();
+    }
 
     int getX();
     int getY();
@@ -40,4 +42,8 @@ public interface INode {
     ArrayList<INode> getPredecessors();
     ArrayList<INode> getSuccessors();
 
+    IPositionHashMap getHashMap();
+    void setHashMap(IPositionHashMap map);
+
+    BetterBlockPos getBlockPos();
 }
