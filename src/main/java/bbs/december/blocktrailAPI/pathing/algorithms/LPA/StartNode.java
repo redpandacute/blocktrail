@@ -105,7 +105,7 @@ public class StartNode implements INode {
 
     @Override
     public double calculateRHS() {
-        return -1;
+        return 0;
     }
 
     @Override

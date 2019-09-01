@@ -75,12 +75,21 @@ public class GoalNode implements INode {
 
     @Override
     public double calculateRHS() {
-        return -1;
+        rhs = INFINITY;
+
+        for(INode curr : map.getPredecessors(this)) {
+            if(curr.getG() + curr.moveCost(this) < rhs) { //Todo implement cost function
+                rhs = curr.getG() + curr.moveCost(this);
+            }
+        }
+
+        return rhs;
     }
 
     @Override
     public Key calculateKey() {
-        return null;
+        key = new Key(this);
+        return key;
     }
 
     @Override

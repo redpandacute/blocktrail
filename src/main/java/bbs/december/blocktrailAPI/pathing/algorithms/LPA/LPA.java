@@ -26,6 +26,8 @@ public class LPA implements IPathFindingAlgorithm {
     }
 
     public void updateNode(INode node) {
+        System.out.println("updating node at: " + node.getX() + " " + node.getY() + " " + node.getZ());
+
         if(!node.getClass().isInstance(StartNode.class)) {
             node.calculateRHS();
 
@@ -40,7 +42,7 @@ public class LPA implements IPathFindingAlgorithm {
     }
 
     private void computeShortestPath() {
-        while((priorityQueue.lowest().getKey().isLowerThan(positionHashMap.getGoalNode().calculateKey()) || !positionHashMap.getGoalNode().isLocallyConsistent()) && active) {
+        while((priorityQueue.lowestKey().isLowerThan(positionHashMap.getGoalNode().calculateKey()) || !positionHashMap.getGoalNode().isLocallyConsistent())) {
             //unsure if the algorithm could get stuck here at the comparison of "isLowerThan" since it actually means <= and not <
 
             INode node = priorityQueue.pop();
@@ -69,12 +71,13 @@ public class LPA implements IPathFindingAlgorithm {
             } else {
                 node.setG(Double.POSITIVE_INFINITY);
 
+                updateNode(node); //in this case, the node itself should also get updated
 
-                 for(INode curr : positionHashMap.getSuccessors(node)) {
-                 updateNode(curr);
-                 }
+                for(INode curr : positionHashMap.getSuccessors(node)) {
+                    updateNode(curr);
+                }
 
-                 updateNode(node); //in this case, the node itself should also get updated
+
 
                 /**
                 for(int i =0; i < 3;i++) {
@@ -140,9 +143,8 @@ public class LPA implements IPathFindingAlgorithm {
     @Override
     public void start() {
         if(thread == null) {
-            initialize();
-
             this.active = true;
+            initialize();
 
             thread = new Thread(this, threadName);
             thread.start();

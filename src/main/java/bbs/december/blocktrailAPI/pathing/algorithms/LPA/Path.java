@@ -2,6 +2,8 @@ package bbs.december.blocktrailAPI.pathing.algorithms.LPA;
 
 import bbs.december.blocktrailAPI.pathing.algorithms.DLite.DLite;
 import bbs.december.blocktrailAPI.IPathFindingAlgorithm;
+import net.minecraft.block.Blocks;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -83,7 +85,8 @@ public class Path implements Iterable<INode> {
 
     public void display() {
         for(INode node : this) {
-
+            World world = node.getHashMap().getWorld();
+            world.setBlockState(node.getBlockPos(), Blocks.MELON.getDefaultState());
         }
     }
 }

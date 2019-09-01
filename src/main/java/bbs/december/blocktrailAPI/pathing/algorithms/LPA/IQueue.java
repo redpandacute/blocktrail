@@ -7,5 +7,5 @@ public interface IQueue  {
 
     INode pop();
 
-    INode lowest();
+    Key lowestKey();
 }

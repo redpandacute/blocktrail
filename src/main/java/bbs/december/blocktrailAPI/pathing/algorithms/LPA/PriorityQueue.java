@@ -7,7 +7,11 @@ public class PriorityQueue extends HashMap<String, INode> implements IQueue  {
 
     @Override
     public void add(INode node) {
-        node.calculateKey(); //Update Key
+
+        if(node instanceof StartNode) {
+            node.calculateKey(); //Update Key
+        }
+
         put(""+node.getX()+""+node.getY()+""+node.getZ(), node);   //the key seems a little off but i guess it should work like that
         //I am not sure if without the "" the coordinates would just get added together.
     }
@@ -28,15 +32,41 @@ public class PriorityQueue extends HashMap<String, INode> implements IQueue  {
     }
 
     @Override
-    public INode lowest() {
+    public Key lowestKey() {
+
+        Key lowest = null;
+
+        if(this.isEmpty()) {
+            lowest = new Key();
+            return lowest;
+        }
+
+        for(INode curr : values()) {
+
+
+            if(lowest == null) {
+                lowest = curr.calculateKey();
+            } else if(curr.calculateKey().isLowerThan(lowest)) {
+                lowest = curr.calculateKey();
+            }
+        }
+
+        return lowest;
+    }
+
+    private INode lowest() {
 
         INode lowest = null;
+        if (isEmpty()) {
+            return null;
+        }
 
-        for(Map.Entry<String, INode> entry : entrySet()) {
-            if(lowest == null) {
-                lowest = entry.getValue();
-            } else if(entry.getValue().getKey().isLowerThan(lowest.getKey())) {
-                lowest = entry.getValue();
+        for (INode curr : values()) {
+
+            if (lowest == null) {
+                lowest = curr;
+            } else if (curr.calculateKey().isLowerThan(lowest.calculateKey())) {
+                lowest = curr;
             }
         }
 

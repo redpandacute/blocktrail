@@ -8,7 +8,13 @@ public class Key {
 
     public Key(INode node) {
         //k1 = min(g(s), rhs(s)) + h(s)
-        k1 = Math.min(node.getG(), node.calculateRHS()) + node.heuristic();
+
+        if(!(node instanceof StartNode)) {
+            k1 = Math.min(node.getG(), node.calculateRHS()) + node.heuristic();
+        } else {
+            k1 = Math.min(node.getG(), node.getRHS());
+        }
+
         //k2 = min(g(s), rhs(s))
         k2 = Math.min(node.getG(), node.getRHS());
 
@@ -25,19 +31,19 @@ public class Key {
 
     //Important comparison in priority queue in order to get the lowest key with the highest prio
     public boolean isLowerThan(Key key2) {
-        if(k1 > key2.getK1()) {
+        if(k1 < key2.getK1()) {
             return true;
         }
 
-        if(k1 < key2.getK1()) {
+        if(k1 > key2.getK1()) {
             return false;
         }
 
-        if(k2 < key2.getK2()) {
-            return false;
+        if(k2 <= key2.getK2()) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public double getK1() {

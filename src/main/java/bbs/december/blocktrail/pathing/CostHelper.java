@@ -1,9 +1,6 @@
 package bbs.december.blocktrail.pathing;
 
-import bbs.december.blocktrail.movement.Drop;
-import bbs.december.blocktrail.movement.IMove;
-import bbs.december.blocktrail.movement.Jump;
-import bbs.december.blocktrail.movement.Walk;
+import bbs.december.blocktrail.movement.*;
 import bbs.december.blocktrailAPI.pathing.algorithms.LPA.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -23,6 +20,7 @@ public class CostHelper implements ICostHelper {
                 !map.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos((int) Math.floor(destinationNode.getX()/16), (int) Math.floor(destinationNode.getZ()/16)))
         ) {
             //todo calculate ideal cost (if diagonal or not)
+            return new UnloadedMove(originNode, destinationNode);
         } else {
             //todo calculate regular cost based on the position and the difficulty of the movement itself
 
@@ -40,8 +38,6 @@ public class CostHelper implements ICostHelper {
                 return new Jump(originNode, destinationNode);
             }
         }
-
-        return null; //never really gets reached
     }
 
     @Override

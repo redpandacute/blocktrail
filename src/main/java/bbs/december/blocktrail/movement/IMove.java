@@ -63,8 +63,15 @@ public interface IMove {
         }
 
         //directionPropeties
-        int x = xDiff/Math.abs(xDiff);
-        int z = zDiff/Math.abs(zDiff);
+        int x = 0, z = 0;
+
+        if(xDiff != 0) {
+            x = xDiff/Math.abs(xDiff);
+        }
+        if(zDiff != 0) {
+            z = zDiff/Math.abs(zDiff);
+        }
+
 
 
 
